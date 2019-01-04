@@ -1,9 +1,7 @@
-[![Build Status](https://travis-ci.org/IBM/microservices-traffic-management-using-istio.svg?branch=master)](https://travis-ci.org/IBM/microservices-traffic-management-using-istio)
 
 
 # Istio: Traffic Management for your Microservices
 
-*Read this in other languages: [한국어](README-ko.md).*
 
 Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh.
 
@@ -43,19 +41,37 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 Create a working directory to clone this repo and to download Istio into:
 
 ```bash
-$ mkdir ibm
-$ cd ibm
-$ git clone https://github.com/IBM/traffic-management-for-your-microservices-using-istio.git demo
+cd
+mkdir ibm
+cd ibm
+git clone https://github.com/IBM/traffic-management-for-your-microservices-using-istio.git demo
 ```
 
-You will also need Istio service mesh installed on top of your Kubernetes cluster.
-Here are the steps (Make sure to change the version to your downloaded one):
+First we will delete the old version (0.7.1)
+
 
 ```bash
-$ curl -L https://git.io/getLatestIstio | sh -
-$ mv istio-<version> istio # replace with version downloaded
-$ export PATH=$PWD/istio/bin:$PATH
-$ kubectl apply -f istio/install/kubernetes/istio-demo.yaml
+kubectl delete -f ~/istio-0.7.1/samples/bookinfo/kube/bookinfo.yaml -n default
+kubectl delete -f ~/istio-0.7.1/install/kubernetes/istio.yaml
+```
+
+Then we will install the latest Istio service mesh on top of your Kubernetes cluster.
+Here are the steps (Make sure to change the version to your downloaded one):
+
+
+```bash
+curl -L https://git.io/getLatestIstio | sh -
+mv istio-1.0.5 istio # replace with version downloaded
+export PATH=$PWD/istio/bin:$PATH
+```
+
+
+
+```bash
+kubectl create namespace istio-system
+helm template ~/istio/install/kubernetes/helm/istio --name istio --namespace istio-system --set grafana.enabled=true --set grafana.service.type=NodePort --set servicegraph.enabled=true --set servicegraph.service.type=NodePort --set kiali.enabled=true --set tracing.enabled=true > ~/istio/istio.yaml
+kubectl apply -f ~/istio/install/kubernetes/helm/istio/templates/crds.yaml
+kubectl apply -f ~/istio/istio.yaml
 
 ```
 
@@ -84,7 +100,7 @@ In this part, we will be using the sample BookInfo Application that comes as def
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f istio/samples/bookinfo/platform/kube/bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f ~/istio/samples/bookinfo/platform/kube/bookinfo.yaml)
 ```
 
 > `istioctl kube-inject` modifies the yaml file passed in _-f_. This injects Envoy sidecar into your Kubernetes resource configuration. The only resources updated are Job, DaemonSet, ReplicaSet, and Deployment. Other resources in the YAML file configuration will be left unmodified.
@@ -105,26 +121,40 @@ reviews-v3-1813607990-8ch52                 2/2       Running   0          6m
 Create an Istio ingress gateway to access your services over a public IP address.
 
 ```bash
-kubectl apply -f  istio/samples/bookinfo/networking/bookinfo-gateway.yaml
+kubectl apply -f  ~/istio/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
 
-To access your application, you can check the public IP address of your application with the following command. Replace "istio-book" below with the name of your Kubernetes cluster!
-Note the IP address will also be different for your cluster.
 
-```bash
-$ export GATEWAY_URL=$(ibmcloud ks workers istio-book | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath={.spec.ports[0].nodePort})
 
-$ echo $GATEWAY_URL 
-169.55.105.75:31380
-```
-
-Now you can access your application via:`http://${GATEWAY_URL}/productpage`
+Now you can access your application via:`http://10.0.0.1:31380/productpage`
 
 If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service. Istio’s load-balancer is using a round-robin algorithm to iterate through the 3 instances of this service
 
 ![productpage](images/none.png)
 ![productpage](images/black.png)
 ![productpage](images/red.png)
+
+
+## Monitoring with Kiali
+You can open Kiali via `http://10.0.0.1:31380/`
+
+![kiali](images/kiali_1.png)
+
+1. Select `Graph` in the left hand menu.
+1. Then select `cert-manager` from the Namespaces drop-down menu
+1. Make sure that you check all types from the `Display` drop-down menu
+1. And `Requests percent of total` from the `Edge Labels` drop-down menu
+
+You can then observe traffic flowin through your mesh network.
+![kiali](images/kiali_0.png)
+
+
+In order to create some heavy traffic, open a new tab in the Terminal and paste the following code
+
+```bash
+for i in `seq 1 200000`; do curl http://$(hostname --ip-address):31380/productpage; done
+```
+
 
 ## 2. Traffic flow management using Istio Pilot - Modify service routes
 
@@ -153,7 +183,7 @@ For more details, see the [Istio documentation](https://istio.io/docs/tasks/traf
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml 
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
   ```
 
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
@@ -161,7 +191,7 @@ This would set all incoming routes on the services (indicated in the line `desti
 This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml 
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
   ```
 
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
@@ -171,7 +201,7 @@ This is indicated by the `weight: 50` in the yaml file.
   > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml 
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml
   ```
 
 * Route 100% of the traffic to the `version: v3` of the **reviews microservices**  
@@ -179,7 +209,7 @@ This is indicated by the `weight: 50` in the yaml file.
 This will direct all incoming traffic to version v3 of the reviews microservice. Run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml 
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml
   ```
 
 ## 3. Access policy enforcement using Istio Mixer - Configure access control
@@ -235,7 +265,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 * Create the configuration on Istio Mixer using the configuration in [new-metrics-rule.yaml](new-metrics-rule.yaml)
 `
   ```bash
-  $ kubectl apply -f new-metrics-rule.yaml 
+  $ kubectl apply -f new-metrics-rule.yaml
   metric.config.istio.io/doublerequestcount created
   prometheus.config.istio.io/doublehandler created
   rule.config.istio.io/doubleprom created
@@ -249,7 +279,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   stdio.config.istio.io/newhandler unchanged
   rule.config.istio.io/newlogstdio unchanged
 	```
- 
+
 * Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. Alternately, the `watch` command allows you to easily
 call the productpage URL and watch the activity in the Grafana dashboard:
 
@@ -281,7 +311,7 @@ Jaeger is a distributed tracing tool that is available with Istio.
   ```bash
   $ kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686
   ```
-  
+
   Access the Jaeger dashboard `http://localhost:16686`
 
   Your dashboard should like this:
@@ -311,7 +341,7 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 
 ## 6. Modify sample application to use the external database
 
-In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database. 
+In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database.
 
 In this step, you can either choose to build your Docker images for different microservices from source in the [microservices folder](/microservices) or use the given images.
 > For building your own images, go to [microservices folder](/microservices)
@@ -401,7 +431,7 @@ As an initial step, remove the ingress rules from the sample app, as they are
 not compatible with the MySQL demo portion:
 
 ```
-kubectl delete -f istio/samples/bookinfo/networking/bookinfo-gateway.yaml
+kubectl delete -f ~/istio/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
 
 * Deploy `productpage` with Envoy injection and the `gateway` for products and reviews.  
