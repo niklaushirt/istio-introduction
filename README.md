@@ -70,10 +70,8 @@ export PATH=$PWD/istio/bin:$PATH
 
 ```bash
 kubectl create namespace istio-system
-helm template ~/istio/install/kubernetes/helm/istio --name istio --namespace istio-system --set grafana.enabled=true --set grafana.service.type=NodePort --set servicegraph.enabled=true --set servicegraph.service.type=NodePort --set kiali.enabled=true --set tracing.enabled=true > ~/istio/istio.yaml
 kubectl apply -f ~/istio/install/kubernetes/helm/istio/templates/crds.yaml
-kubectl apply -f ~/istio/istio.yaml
-
+kubectl apply -f https://raw.githubusercontent.com/niklaushirt/microservices-traffic-management-using-istio/master/istio.yaml
 ```
 
 
@@ -137,7 +135,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 
 
 ## Monitoring with Kiali
-You can open Kiali via `http://10.0.0.1:31380/`
+You can open Kiali via `http://10.0.0.1:31119/`
 
 ![kiali](images/kiali_1.png)
 
