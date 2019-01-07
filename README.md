@@ -168,7 +168,7 @@ This step shows you how to configure where you want your service requests to go 
 Before moving on, we have to define the destination rules. The destination rules tell Istio what versions (subsets in Istio terminology) are available for routing. This step is required before fine-grained traffic shaping is possible.
 
 ```bash
-$  kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+$  kubectl apply -f ~/istio/samples/bookinfo/networking/destination-rule-all.yaml
 destinationrule.networking.istio.io/productpage created
 destinationrule.networking.istio.io/reviews created
 destinationrule.networking.istio.io/ratings created
@@ -182,7 +182,7 @@ For more details, see the [Istio documentation](https://istio.io/docs/tasks/traf
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+  $ kubectl apply -f ~/istio/samples/bookinfo/networking/virtual-service-all-v1.yaml
   ```
 
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
@@ -190,7 +190,7 @@ This would set all incoming routes on the services (indicated in the line `desti
 This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
+  $ kubectl apply -f ~/istio/samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
   ```
 
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
@@ -200,7 +200,7 @@ This is indicated by the `weight: 50` in the yaml file.
   > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml
+  $ kubectl apply -f ~/istio/samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml
   ```
 
 * Route 100% of the traffic to the `version: v3` of the **reviews microservices**  
@@ -208,7 +208,7 @@ This is indicated by the `weight: 50` in the yaml file.
 This will direct all incoming traffic to version v3 of the reviews microservice. Run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml
+  $ kubectl apply -f ~/istio/samples/bookinfo/networking/virtual-service-reviews-v3.yaml
   ```
 
 ## 3. Access policy enforcement using Istio Mixer - Configure access control
@@ -216,8 +216,8 @@ This will direct all incoming traffic to version v3 of the reviews microservice.
 This step shows you how to control access to your services. It helps to reset the routing rules to ensure that we are starting with a known configuration. The following commands will first set all review requests to v1, and then apply a rule to route requests from user _jason_ to v2, while all others go to v3:
 
 ```bash
-   kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
-   kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-jason-v2-v3.yaml
+   kubectl apply -f ~/istio/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   kubectl apply -f ~/istio/samples/bookinfo/networking/virtual-service-reviews-jason-v2-v3.yaml
 ```
 
 You'll now see that your `productpage` always red stars on the reviews section if not logged in, and always shows black stars when logged in as _jason_.
@@ -225,8 +225,8 @@ You'll now see that your `productpage` always red stars on the reviews section i
 * To deny access to the ratings service for all traffic coming from `reviews-v3`, you will use apply these rules:
 
   ```bash
-   kubectl apply -f samples/bookinfo/policy/mixer-rule-deny-label.yaml
-   kubectl apply -f samples/bookinfo/policy/mixer-rule-ratings-denial.yaml
+   kubectl apply -f ~/istio/samples/bookinfo/policy/mixer-rule-deny-label.yaml
+   kubectl apply -f ~/istio/samples/bookinfo/policy/mixer-rule-ratings-denial.yaml
   ```
 
 * To verify if your rule has been enforced, point your browser to your BookInfo Applicatio. You'll notice you see no stars from the reviews section unless you are logged in as _jason_, in which case you'll see black stars.
@@ -484,7 +484,7 @@ Point your browser to:
 $ kubectl delete -f istio/install/kubernetes/istio-demo.yaml
 ```
 
-* To delete the BookInfo app and its route-rules: ` ./samples/bookinfo/platform/kube/cleanup.sh`
+* To delete the BookInfo app and its route-rules: ` ~/istio/samples/bookinfo/platform/kube/cleanup.sh`
 
 # References
 [Istio.io](https://istio.io/docs/tasks/)
