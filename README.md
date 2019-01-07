@@ -60,7 +60,8 @@ Here are the steps (Make sure to change the version to your downloaded one):
 
 
 ```bash
-curl -L https://git.io/getLatestIstio | sh -
+wget https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz
+tar -xvzf ./istio-1.0.5-linux.tar.gz
 mv istio-1.0.5 istio # replace with version downloaded
 export PATH=$PWD/istio/bin:$PATH
 ```
