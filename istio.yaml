@@ -12682,6 +12682,7 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
+      nodePort: 31118
       protocol: TCP
       name: http
   selector:
@@ -14433,11 +14434,13 @@ items:
       release: istio
       heritage: Tiller
   spec:
+    type: NodePort
     ports:
       - name: query-http
         port: 16686
         protocol: TCP
         targetPort: 16686
+        nodePort: 31117
     selector:
       app: jaeger
 - apiVersion: v1
