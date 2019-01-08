@@ -180,6 +180,8 @@ watch -n 1 curl -s http://$(hostname --ip-address):31380/productpage
 ```
 
 
+Get more info on the [Kiali](https://www.kiali.io/documentation/overview/) website.
+
 ## 2. Traffic flow management using Istio Pilot - Modify service routes
 
 In this section, Istio will be configured to dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
