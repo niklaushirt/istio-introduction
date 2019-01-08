@@ -104,9 +104,9 @@ application and inject Istio sidecars to enable traffic flow management, access 
 
 Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
-5. [Create an external datasource for the application](#5-create-an-external-datasource-for-the-application)
-6. [Modify sample application to use the external database](#6-modify-sample-application-to-use-the-external-database)
-7. [Deploy application microservices and Istio envoys with egress traffic enabled](#7-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
+5. [Create an external datasource for the application](./README_PART_2.md#5-create-an-external-datasource-for-the-application)
+6. [Modify sample application to use the external database](./README_PART_2.md#6-modify-sample-application-to-use-the-external-database)
+7. [Deploy application microservices and Istio envoys with egress traffic enabled](./README_PART_2.md#7-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
 
 ## Part A: Deploy sample Bookinfo application
 
