@@ -150,13 +150,13 @@ Now you can access your application via: [`http://10.0.0.1:31380/productpage`](h
 
 If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service. Istio’s load-balancer is using a round-robin algorithm to iterate through the 3 instances of this service
 
-#####V1 - No ratings
+##### V1 - No ratings
 ![productpage](images/none.png)
 
-#####V2 - Ratings with black stars
+##### V2 - Ratings with black stars
 ![productpage](images/black.png)
 
-#####V3- Ratings with red stars
+##### V3- Ratings with red stars
 ![productpage](images/red.png)
 
 
