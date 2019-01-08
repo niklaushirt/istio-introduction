@@ -170,14 +170,19 @@ You can now access your application to confirm that it is getting data from your
 Point your browser to:  
 `http://${GATEWAY_URL}/productpage`
 
-# Troubleshooting
+# Clean-up
+
+
+* To delete the BookInfo app and its route-rules: ` ~/istio/samples/bookinfo/platform/kube/cleanup.sh`
+
 * To delete Istio from your cluster
 
 ```bash
-$ kubectl delete -f istio/install/kubernetes/istio-demo.yaml
-```
+kubectl delete -f https://raw.githubusercontent.com/niklaushirt/microservices-traffic-management-using-istio/master/istio.yaml
+kubectl delete -f ~/istio/install/kubernetes/helm/istio/templates/crds.yaml
+kubectl delete ns istio-system
 
-* To delete the BookInfo app and its route-rules: ` ~/istio/samples/bookinfo/platform/kube/cleanup.sh`
+```
 
 # References
 [Istio.io](https://istio.io/docs/tasks/)
