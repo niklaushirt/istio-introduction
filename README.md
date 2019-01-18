@@ -168,10 +168,8 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ## Monitoring with Kiali
 
 > In order to create some more sustained traffic, open a new tab in the Terminal and paste the following code
-
-> ```bash
 watch -n 1 curl -s http://$(hostname --ip-address):31380/productpage
-```
+
 
 You can open Kiali via [`http://10.0.0.1:31119/`](http://10.0.0.1:31119/) (replace 10.0.0.1 with the address of your cluster)
 
