@@ -40,12 +40,17 @@ In the [second part](#part-b-modify-sample-application-to-use-an-external-dataso
 # Prerequisites
 Get a Kubernetes cluster...
 
+####Preferred way for this Tutorial:
+
+- [IBM Cloud Private hosted trial](https://www.ibm.com/cloud/garage/dte/tutorial/ibm-cloud-private-hosted-trial) to deploy in cloud. 
+
+
+Otherwise you can use the following as well:
+
 - [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing 
 - [IBM Cloud Private](https://github.com/IBM/deploy-ibm-cloud-private/blob/master/README.md)
 - [IBM Cloud Kubernetes Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) to deploy in cloud. 
-- [IBM Cloud Private hosted trial](https://www.ibm.com/cloud/garage/dte/tutorial/ibm-cloud-private-hosted-trial) to deploy in cloud. 
 
-The code here is regularly tested against IBM Cloud Kubernetes Service using Travis.
 
 Create a working directory to clone this repo and to download Istio into:
 
@@ -56,7 +61,7 @@ cd ibm
 git clone https://github.com/IBM/traffic-management-for-your-microservices-using-istio.git demo
 ```
 
-First we will delete the old version of ISTIO (0.7.1)
+First we will delete the old version of ISTIO (0.7.1) (only for the hosted trial)
 
 
 ```bash
@@ -161,6 +166,13 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 
 
 ## Monitoring with Kiali
+
+> In order to create some more sustained traffic, open a new tab in the Terminal and paste the following code
+
+> ```bash
+watch -n 1 curl -s http://$(hostname --ip-address):31380/productpage
+```
+
 You can open Kiali via [`http://10.0.0.1:31119/`](http://10.0.0.1:31119/) (replace 10.0.0.1 with the address of your cluster)
 
 
@@ -173,11 +185,7 @@ You can then observe traffic flowing through your mesh network.
 ![kiali](images/kiali_0.png)
 
 
-In order to create some more sustained traffic, open a new tab in the Terminal and paste the following code
 
-```bash
-watch -n 1 curl -s http://$(hostname --ip-address):31380/productpage
-```
 
 
 Get more info on the [Kiali](https://www.kiali.io/documentation/overview/) website.
