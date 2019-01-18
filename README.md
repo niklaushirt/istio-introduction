@@ -167,17 +167,22 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 
 ## Monitoring with Kiali
 
-> In order to create some more sustained traffic, open a new tab in the Terminal and paste the following code
+####In order to create some more sustained traffic, open a new tab in the Terminal and paste the following code
+
+```bash
 watch -n 1 curl -s http://$(hostname --ip-address):31380/productpage
+```
 
 
 You can open Kiali via [`http://10.0.0.1:31119/`](http://10.0.0.1:31119/) (replace 10.0.0.1 with the address of your cluster)
 
 
 1. Select `Graph` in the left hand menu.
-1. Then select `cert-manager` from the Namespaces drop-down menu
+1. Then select `default` from the Namespaces drop-down menu
 1. Make sure that you check all types from the `Display` drop-down menu
 1. And `Requests percent of total` from the `Edge Labels` drop-down menu
+2. If you see no objects, there might be no traffic flowing through your mesh network yet (you chan change the seeting to display inactive objects too)
+3. You might want to changer the refresh rate to 5s to more easily observe the changes in traffic
 
 You can then observe traffic flowing through your mesh network.
 ![kiali](images/kiali_0.png)
@@ -264,7 +269,7 @@ You'll now see that your `productpage` always red stars on the reviews section i
    kubectl apply -f ~/istio/samples/bookinfo/policy/mixer-rule-ratings-denial.yaml
   ```
 
-* To verify if your rule has been enforced, point your browser to your BookInfo Applicatio. You'll notice you see no stars from the reviews section unless you are logged in as _jason_, in which case you'll see black stars.
+* To verify if your rule has been enforced, point your browser to your BookInfo Application. You'll notice you see no stars from the reviews section unless you are logged in as _jason_, in which case you'll see black stars.
 
 ![access-control](images/access.png)
 
