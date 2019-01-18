@@ -182,7 +182,7 @@ You can open Kiali via [`http://10.0.0.1:31119/`](http://10.0.0.1:31119/) (repla
 1. Make sure that you check all types from the `Display` drop-down menu
 1. And `Requests percent of total` from the `Edge Labels` drop-down menu
 2. If you see no objects, there might be no traffic flowing through your mesh network yet (you chan change the seeting to display inactive objects too)
-3. You might want to changer the refresh rate to 5s to more easily observe the changes in traffic
+3. You might want to change the refresh rate to 5s to more easily observe the changes in traffic
 
 You can then observe traffic flowing through your mesh network.
 ![kiali](images/kiali_0.png)
